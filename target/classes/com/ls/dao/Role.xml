@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ls.dao.IRoleDao">
+	<resultMap type="Role" id="roleMap">
+	<result column="role_id" property="roleId"/>
+	<result column="role_name" property="roleName"/>
+	<result column="role_desc" property="roleDesc"/>
+	<result column="role_mark" property="roleMark"/>
+	</resultMap>
+	<!-- 定义要进行数据追加操作的SQL语句，每一个SQL都需要有一个自己独立的ID，这个ID为程序引用 -->
+	<insert id="add" parameterType="Role">
+		insert into role_info(role_name,role_desc,role_mark)values(#{roleName},#{roleDesc},#{roleMark})
+	</insert>
+	<select id="list" resultMap="roleMap"  parameterType="Role">
+		select * from role_info where role_mark=#{roleMark}
+	</select>
+	<update id="update" parameterType="Role">
+				update role_info 
+		<set>
+		
+			<if test="roleName!=null">
+				role_name=#{roleName},
+			</if>
+			<if test="roleDesc!=null">
+				role_desc=#{roleDesc},
+			</if>
+			<if test="roleMark!=null">
+				role_mark=#{roleMark},
+			</if>
+		</set>
+		where role_id=#{roleId}
+	</update>
+	<select id="findById" parameterType="Integer" resultMap="roleMap">
+		select * from role_info where role_id=#{id}
+	</select>
+	<select id="findName" parameterType="java.lang.String" resultMap="roleMap">
+		select * from role_info where role_name=#{name}
+	</select>
+	
+</mapper>

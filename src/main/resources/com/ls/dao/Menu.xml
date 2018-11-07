@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.ls.dao.IMenuDao">
+	<resultMap type="Menu" id="menuMap">
+		<result column="menu_id" property="menuId"/>
+		<result column="prent_menu_id" property="prentMenuId"/>
+		<result column="menu_name" property="menuName"/>
+		<result column="menu_url" property="menuUrl"/>
+		<result column="prent_name" property="prentName"/>
+	</resultMap>
+	<select id="list" parameterType="Menu" resultMap="menuMap">	
+			select * from menu_info
+	</select>
+	<select id="getMenulist" parameterType="Menu" resultMap="menuMap">
+			select * from menu_info where prent_menu_id=#{menuId}
+	</select>
+	<select id="findAll" parameterType="Menu" resultMap="menuMap">
+			select  
+			a.*,b.menu_name as prent_name
+			from menu_info a,menu_info b 
+			where  b.menu_id=a.prent_menu_id
+	</select>
+	<select id="getinfo" parameterType="Menu" resultMap="menuMap">
+			select  
+			a.*,b.menu_name as prent_name
+			from menu_info a,menu_info b 
+			where a.menu_id=#{menuId} and b.menu_id=a.prent_menu_id
+		
+	</select>
+	<select id="findById" parameterType="Integer" resultMap="menuMap">
+		select * from menu_info where menu_id=#{Id}	
+	</select>
+	<insert id="add" parameterType="Menu">
+		insert into menu_info(prent_menu_id,menu_name,menu_url)
+		values(#{prentName},#{menuName},#{menuUrl})
+	</insert>
+	<update id="update" parameterType="Menu">
+		update  menu_info set menu_name=#{menuName},prent_menu_id=#{prentName},menu_url=#{menuUrl}
+		where menu_id=#{menuId}
+	</update>
+	<delete id="delete" parameterType="Menu">
+	delete from menu_info  where menu_id=#{menuId}
+	</delete>
+</mapper>

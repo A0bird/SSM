@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.ls.dao.IExpenseDao">
+	<resultMap  type="ExpenseAccount" id="eaMap">
+		<result column="expense_id" property="expenseId"/>
+		<result column="user_id" property="userId"/>
+		<result column="expense_name" property="expenseName"/>
+		<result column="expense_desc" property="expenseDesc"/>
+		<result column="expense_time" property="expenseTime"/>
+		<result column="expense_state" property="expenseState"/>
+		<result column="expense_total" property="expenseTotal"/>
+		<result column="user_name" property="userName"/>
+	</resultMap>
+	<resultMap type="ExpenseDetails" id="edMap">
+		<result column="expense_details_id" property="expenseDetailsId"/>
+		<result column="expense_id" property="expenseId"/>
+		<result column="cost_id" property="costId"/>
+		<result column="cost_name" property="costName"/>
+		<result column="cost_desc" property="costDesc"/>
+		<result column="expense_details_amount" property="expenseDetailsAmount"/>
+	</resultMap>
+		<resultMap type="Audit" id="auditMap">
+		<result column="user_name" property="userName"/>
+		<result column="audit_id" property="auditId"/>
+		<result column="expense_id" property="expenseId"/>
+		<result column="user_id" property="userId"/>
+		<result column="audit_state"  property="auditState"/>
+		<result column="audit_time"  property="auditTime"/>
+		<result column="audit_desc"  property="auditDesc"/>
+		<result column="audit_name" property="auditName"/>
+	</resultMap>
+<insert id="addExpense"  parameterType="ExpenseAccount" useGeneratedKeys="true" keyProperty="expenseId">
+	insert into expense_account (user_id,expense_name,expense_desc,expense_time,expense_state,expense_total) 
+	values(#{userId},#{expenseName},#{expenseDesc},#{expenseTime},#{expenseState},#{expenseTotal})
+</insert>
+<insert id="addDetails"  parameterType="ExpenseDetails">
+	insert into expense_details (expense_id,cost_id,expense_details_amount) 
+	values (#{expenseId},#{costId},#{expenseDetailsAmount})
+</insert>
+<insert id="addAudit"  parameterType="Audit">
+	insert into  audit_history (expense_id,user_id,audit_state,audit_desc,audit_name,audit_time) 
+	values(#{expenseId},#{userId},#{auditState},#{auditDesc},#{auditName},#{auditTime})	
+</insert>
+<update id="update" parameterType="ExpenseAccount">
+		update expense_account set expense_state=#{auditState} where expense_id=#{expenseId}
+</update>
+<select id="list" parameterType="ExpenseAccount" resultMap="eaMap">
+	select expense_id,expense_name,b.user_name,expense_time,expense_total from expense_account a, user_info b 
+	where a.user_id=b.user_id
+</select>
+<select id="finds" parameterType="ExpenseAccount" resultMap="eaMap">
+	select expense_id,expense_name,b.user_name,expense_time,expense_total from expense_account a, user_info b 
+	where a.user_id=b.user_id and 
+	expense_state=#{expenseState}
+	
+</select>
+<select id="findone" parameterType="ExpenseAccount" resultMap="eaMap">
+	select * from expense_account 
+	where expense_id=#{expense_id}
+</select>
+<select id="findsone" parameterType="ExpenseDetails"  resultMap="edMap">
+	select a.cost_name,a.cost_desc,expense_details_amount 
+	from cost_info a,expense_details b
+	where expense_id=#{expenseId} and a.cost_id=b.cost_id
+</select>
+<select id="findaudits" parameterType="ExpenseAccount"  resultMap="eaMap">
+	select a.* from expense_account a,audit_history b,
+	where a.expense_id=b.expense_id and b.audit_state=#{auditState} 
+</select>
+
+<select id="findme"  parameterType="Audit"  resultMap="auditMap">
+		select a.*,b.user_name from audit_history a , user_info b 
+		where a.expense_id=#{expenseId} and a.user_id=b.user_id
+ </select>
+ <select id="findMy" parameterType="ExpenseAccount" resultMap="eaMap">
+ select expense_state,expense_id,expense_name,b.user_name,expense_time,expense_total from expense_account a, user_info b 
+	where a.user_id=b.user_id and a.user_id=#{userId}
+ </select>
+  <select id="findMyself" parameterType="ExpenseAccount" resultMap="eaMap">
+	 select c.audit_id,expense_state,c.expense_id,expense_name,b.user_name,expense_time,expense_total 
+	 from expense_account a, user_info b,audit_history c 
+	 where a.user_id=b.user_id and a.expense_id=c.expense_id and c.audit_name=#{auditName};
+ </select>
+
+ 
+</mapper>

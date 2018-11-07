@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.ls.dao.IUserDao">
+	<resultMap type="User" id="userMap">
+	<result column="user_id" property="userId"/>
+	<result column="role_id" property="roleId"/>
+	<result column="user_name" property="userName"/>
+	<result column="user_sex" property="userSex"/>
+	<result column="user_age" property="userAge"/>
+	<result column="user_account" property="userAccount"/>
+	<result column="user_password" property="userPassword"/>
+	<result column="user_salary" property="userSalary"/>
+	<result column="role_name" property="roleName"/>
+	<result column="user_mark" property="userMark"/>
+		<!-- <collection property="role"  ofType="role">
+		<result column="role_id" property="roleId"/>
+		<result column="role_name" property="roleName"/>
+		<result column="role_desc" property="roleDesc"/>
+		<result column="role_mark" property="roleMark"/>
+		</collection>	 -->
+	</resultMap>
+	<select id="getUser" parameterType="User" resultMap="userMap">
+		select * from user_info where user_account=#{userAccount}
+	</select>
+	<select id="login" parameterType="User"  resultMap="userMap" >
+		select * from user_info where user_password=#{userPassword} and user_account=#{userAccount} and user_mark='0'
+	</select>
+		<insert id="add" parameterType="User">
+			insert into user_info(role_id,user_name,user_sex,user_age,user_account,user_password,user_salary,user_mark)values(#{roleId},
+			#{userName},#{userSex},#{userAge},#{userAccount},#{userPassword},#{userSalary},#{userMark});
+		</insert>
+		<select id="list" resultMap="userMap"  parameterType="User">
+				select 
+				user_id,role_name,user_name,user_sex,user_age,user_account,user_password,user_salary,user_mark
+				from user_info 
+				join  role_info on user_info.role_id=role_info.role_id
+				where user_mark=#{userMark}
+		</select>
+		<select id="findById" parameterType="Integer" resultMap="userMap">
+				select * from user_info where user_id=#{id}
+		</select>
+		<update id="update" parameterType="User">
+				update user_info 
+		<set>
+		
+			<if test="userName!=null">
+				user_name=#{userName},
+			</if>
+			<if test="userSex!=null">
+				user_sex=#{userSex},
+			</if>
+			<if test="userAge!=null">
+				user_age=#{userAge},
+			</if>
+			<if test="userSalary!=null">
+				user_salary=#{userSalary},
+			</if>
+			<if test="userAccount!=null">
+				user_account=#{userAccount},
+			</if>
+			<if test="userPassword!=null">
+				user_password=#{userPassword},
+			</if>
+			<if test="userMark!=null">
+				user_mark=#{userMark},
+			</if>
+		</set>
+		where user_id=#{userId}
+	</update>
+	<select id="findByName" parameterType="User" resultMap="userMap">
+				select 
+				user_id,role_name,user_name,user_sex,user_age,user_account,user_password,user_salary,user_mark
+				from user_info 
+				join  role_info on user_info.role_id=role_info.role_id
+				 where user_name=#{userName} and user_mark=#{userMark}
+	</select>
+	<select id="find"  parameterType="User" resultMap="userMap">
+		select * from user_info where user_account=#{userAccount}
+	</select>
+</mapper>
